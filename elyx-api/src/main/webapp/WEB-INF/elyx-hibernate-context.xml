@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+			  http://www.springframework.org/schema/beans/spring-beans.xsd
+              http://www.springframework.org/schema/security 
+              http://www.springframework.org/schema/security/spring-security.xsd
+              http://www.springframework.org/schema/security/oauth2 
+              http://www.springframework.org/schema/security/spring-security-oauth2.xsd
+              http://www.springframework.org/schema/cache
+           	  http://www.springframework.org/schema/cache/spring-cache.xsd
+           	  http://www.springframework.org/schema/context
+			  http://www.springframework.org/schema/context/spring-context-3.0.xsd
+           	  http://www.springframework.org/schema/aop 
+			  http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+			  http://www.springframework.org/schema/tx
+			  http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<cache:annotation-driven />
+	<aop:aspectj-autoproxy />
+	<context:component-scan base-package="com.elyx.*" />
+
+	<beans:bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<beans:property name="persistenceXmlLocation"
+			value="/WEB-INF/persistence.xml" />
+		<beans:property name="persistenceUnitName" value="elyxPersistenceUnit" />
+		<beans:property name="dataSource" ref="dataSource" />
+		<beans:property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
+		<beans:property name="jpaDialect" ref="jpaDialect" />
+	</beans:bean>
+
+	<beans:bean id="jpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<beans:property name="database" value="HSQL" />
+		<beans:property name="databasePlatform"
+			value="org.hibernate.dialect.HSQLDialect" />
+		 <beans:property name="generateDdl" value="true" />
+         <beans:property name="showSql" value="true" />	
+	</beans:bean>
+
+	<beans:bean id="jpaDialect"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+
+	<beans:bean id="transactionManager"
+		class="org.springframework.orm.jpa.JpaTransactionManager">
+		<beans:property name="entityManagerFactory" ref="entityManagerFactory" />
+		<beans:property name="dataSource" ref="dataSource" />
+		<beans:property name="jpaDialect" ref="jpaDialect" />
+	</beans:bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<beans:property name="url"
+			value="jdbc:mysql://localhost:3306/elyx" />
+		<beans:property name="username" value="root" />
+		<beans:property name="password" value="elyx" />
+		<!-- <beans:property name="password" value="puneet" /> -->
+		<beans:property name="testOnBorrow" value="true" />
+		<beans:property name="validationQuery" value="select 1" />
+	</beans:bean>
+
+</beans:beans>

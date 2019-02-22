@@ -1,0 +1,38 @@
+package com.elyx.model.user;
+
+public enum DoctorSpecialization {
+
+	Anaesthesiology,
+	Bacteriology,
+	Cardiology,
+	Cytology,
+	Dermatology,
+	Endocrinology,
+	Gastro_enterology,
+	Gynaecology,
+	Haematology,
+	Histology,
+	Histopathology,
+	Immunology,
+	Microbiology,
+	Nephrology,
+	Neurology,
+	Oncology,
+	Ophthalmology,
+	Otorhinolaryngology,
+	Pathology,
+	Radiology,
+	Rheumatology,
+	Urology,
+	Venereology,
+	Biochemistry,
+	Forensic_pathology,
+	Genitourinary,
+	Obstetrics,
+	Orthopaedics,
+	Geriatrics,
+	Paediatrics,
+	Psychiatry,
+	General_Medicine,
+	Others
+}

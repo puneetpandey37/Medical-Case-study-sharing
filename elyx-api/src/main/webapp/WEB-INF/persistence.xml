@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	version="1.0">
+	<persistence-unit name="elyxPersistenceUnit"
+		transaction-type="RESOURCE_LOCAL">
+		<class>com.elyx.model.user.User</class>
+		<class>com.elyx.model.user.Tenant</class>
+		<class>com.elyx.model.contribution.Contribution</class>
+		<class>com.elyx.model.cases.Case</class>
+		<class>com.elyx.model.cases.CaseImage</class>
+		<class>com.elyx.model.keyvalue.CaseAdditionalInfo</class>
+		<class>com.elyx.model.cases.CaseSharing</class>
+	</persistence-unit>
+	
+</persistence>

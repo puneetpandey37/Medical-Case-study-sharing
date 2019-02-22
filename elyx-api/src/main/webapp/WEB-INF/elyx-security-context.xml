@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xmlns:sec="http://www.springframework.org/schema/security" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd ">
+
+
+	<http pattern="/oauth/token" create-session="stateless"
+		authentication-manager-ref="authenticationManager"
+		xmlns="http://www.springframework.org/schema/security" > 
+		<intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
+		<anonymous enabled="false" />
+		<http-basic entry-point-ref="clientAuthenticationEntryPoint" />
+		<custom-filter ref="clientCredentialsTokenEndpointFilter" before="BASIC_AUTH_FILTER" /> 
+		<access-denied-handler ref="oauthAccessDeniedHandler" />
+	</http>
+
+	<http pattern="/users/**" create-session="never"
+		entry-point-ref="oauthAuthenticationEntryPoint"
+		xmlns="http://www.springframework.org/schema/security">
+		<anonymous enabled="false" />
+		<!-- <intercept-url pattern="/resources/**" method="GET" /> -->
+		<intercept-url pattern="/users/**" access="IS_AUTHENTICATED_FULLY" />
+		<custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+		<access-denied-handler ref="oauthAccessDeniedHandler" />
+	</http>
+	
+	<http pattern="/cloud/**" create-session="never"
+		entry-point-ref="oauthAuthenticationEntryPoint"
+		xmlns="http://www.springframework.org/schema/security">
+		<anonymous enabled="false" />
+		<!-- <intercept-url pattern="/resources/**" method="GET" /> -->
+		<intercept-url pattern="/cloud/**" access="IS_AUTHENTICATED_FULLY" />
+		<custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+		<access-denied-handler ref="oauthAccessDeniedHandler" />
+	</http>
+	
+	<http pattern="/tenants/**" create-session="never"
+		entry-point-ref="oauthAuthenticationEntryPoint"
+		xmlns="http://www.springframework.org/schema/security">
+		<anonymous enabled="false" />
+		<!-- <intercept-url pattern="/resources/**" method="GET" /> -->
+		<intercept-url pattern="/tenants/**" access="IS_AUTHENTICATED_FULLY" />
+		<custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+		<access-denied-handler ref="oauthAccessDeniedHandler" />
+	</http>
+	
+	<http pattern="/cases/**" create-session="never"
+		entry-point-ref="oauthAuthenticationEntryPoint"
+		xmlns="http://www.springframework.org/schema/security">
+		<anonymous enabled="false" />
+		<!-- <intercept-url pattern="/resources/**" method="GET" /> -->
+		<intercept-url pattern="/cases/**" access="IS_AUTHENTICATED_FULLY" />
+		<custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+		<access-denied-handler ref="oauthAccessDeniedHandler" />
+	</http> 
+	
+	<http pattern="/contributions/**" create-session="never"
+		entry-point-ref="oauthAuthenticationEntryPoint"
+		xmlns="http://www.springframework.org/schema/security">
+		<anonymous enabled="false" />
+		<!-- <intercept-url pattern="/resources/**" method="GET" /> -->
+		<intercept-url pattern="/cases/**" access="IS_AUTHENTICATED_FULLY" />
+		<custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+		<access-denied-handler ref="oauthAccessDeniedHandler" />
+	</http>
+	
+	<http pattern="/logout" create-session="never" 
+		entry-point-ref="oauthAuthenticationEntryPoint"
+	 	xmlns="http://www.springframework.org/schema/security">
+		<anonymous enabled="false" />
+		<intercept-url pattern="/logout" method="GET" />
+		<sec:logout invalidate-session="true" logout-url="/logout" success-handler-ref="logoutSuccessHandler"   />
+		<custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+		<access-denied-handler ref="oauthAccessDeniedHandler" />
+	</http>
+	
+	<bean id="logoutSuccessHandler" class="com.elyx.common.security.ElyxAccessTokenLogout" >
+		<property name="tokenstore" ref="tokenStore"></property>
+	</bean>
+	
+	<bean id="oauthAuthenticationEntryPoint"
+		class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+	</bean>
+
+	<bean id="clientAuthenticationEntryPoint"
+		class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+		<property name="realmName" value="springsec/client" />
+		<property name="typeName" value="Basic" />
+	</bean>
+
+	<bean id="oauthAccessDeniedHandler"
+		class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler">
+	</bean>
+
+	<bean id="clientCredentialsTokenEndpointFilter"
+		class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+	</bean>
+
+	<authentication-manager alias="authenticationManager"
+		xmlns="http://www.springframework.org/schema/security">
+		<authentication-provider user-service-ref="clientDetailsUserService">
+		</authentication-provider>
+	</authentication-manager>
+
+	<bean id="encoder"
+		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+		<constructor-arg name="strength" value="10" />
+	</bean> 
+	
+	<bean id="clientDetailsUserService"
+		class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
+		<constructor-arg ref="clientDetails" />
+	</bean>
+	
+	<bean id="clientDetails" class="com.elyx.common.security.ElyxClientDetailsService"/>
+	
+	<authentication-manager id="userAuthenticationManager" 
+		xmlns="http://www.springframework.org/schema/security">
+		<authentication-provider  ref="customUserAuthenticationProvider">
+		</authentication-provider>
+	</authentication-manager>
+	
+	<bean id="customUserAuthenticationProvider"
+		class="com.elyx.common.security.ElyxAuthenticationProvider">
+	</bean>
+	
+	<oauth:authorization-server
+		client-details-service-ref="clientDetails" token-services-ref="tokenServices">
+		<oauth:authorization-code />
+		<oauth:implicit/>
+		<oauth:refresh-token/>
+		<oauth:client-credentials />
+		<oauth:password authentication-manager-ref="userAuthenticationManager"/>
+	</oauth:authorization-server>
+
+	<oauth:resource-server id="resourceServerFilter"
+		resource-id="springsec" token-services-ref="tokenServices" />
+
+	<bean id="tokenStore"
+		class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore" />
+
+	<bean id="tokenServices" 
+		class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
+		<property name="tokenStore" ref="tokenStore" />
+		<property name="supportRefreshToken" value="true" />
+		<property name="accessTokenValiditySeconds" value="4000000"></property>
+		<property name="clientDetailsService" ref="clientDetails" />
+	</bean>
+
+</beans>
